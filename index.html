@@ -9,6 +9,7 @@
   <body>
     <div x-data="{count:1}">
       <h1 x-text="count"></h1>
+      <p x-show="count>2">it's greater than 2</p>
       <button @mouseenter="count++">+</button>
       <button @click="count--">-</button>
     </div>
@@ -62,6 +63,9 @@
       let directives = {
         "x-text": function (el, value) {
           el.innerHTML = eval(`with (rawData) ${value}`); //get rawData scope and call like a variable
+        },
+        "x-show": function (el, value) {
+          el.style.display = eval(`with (rawData) ${value}`) ? "block" : "none";
         },
       };
       refreshDom(); //initial refresh
