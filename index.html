@@ -20,10 +20,10 @@
       function refreshDom() {
         iterateDomNodes(root, (el) => {
           //each root's element will iterate here
-          if (el.hasAttribute("x-text")) {
-            let expression = el.getAttribute("x-text"); //'count'
-            el.innerHTML = eval(`with (rawData) ${expression}`); //get rawData scope and call like a variable
-          }
+          Array.from(el.attributes).forEach((attribute) => {
+            if (!Object.keys(directives).includes(attribute.name)) return;
+            directives[attribute.name](el, attribute.value);
+          });
         });
       }
       function iterateDomNodes(el, callback) {
@@ -58,6 +58,12 @@
       let root = document.querySelector("[x-data]");
       let rawData = getRawData();
       let data = getReactiveData(rawData);
+      //define directives here
+      let directives = {
+        "x-text": function (el, value) {
+          el.innerHTML = eval(`with (rawData) ${value}`); //get rawData scope and call like a variable
+        },
+      };
       refreshDom(); //initial refresh
       listenEvents();
     </script>
