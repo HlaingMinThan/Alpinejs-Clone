@@ -23,7 +23,10 @@
           //each root's element will iterate here
           Array.from(el.attributes).forEach((attribute) => {
             if (!Object.keys(directives).includes(attribute.name)) return;
-            directives[attribute.name](el, attribute.value);
+            directives[attribute.name](
+              el,
+              eval(`with (rawData) ${attribute.value}`)
+            );
           });
         });
       }
@@ -62,10 +65,10 @@
       //define directives here
       let directives = {
         "x-text": function (el, value) {
-          el.innerHTML = eval(`with (rawData) ${value}`); //get rawData scope and call like a variable
+          el.innerHTML = value; //get rawData scope and call like a variable
         },
         "x-show": function (el, value) {
-          el.style.display = eval(`with (rawData) ${value}`) ? "block" : "none";
+          el.style.display = value ? "block" : "none";
         },
       };
       refreshDom(); //initial refresh
