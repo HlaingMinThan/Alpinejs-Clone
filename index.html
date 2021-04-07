@@ -10,7 +10,7 @@
     
     <div x-data="{count:1}">
         <h1 x-text="count"></h1>
-        <button @click="count++">+</button>
+        <button @mouseenter="count++">+</button>
         <button @click="count--">-</button>
     </div>    
     <script>
@@ -44,12 +44,16 @@
         }
         function listenEvents() {
             iterateDomNodes(root,el=>{
-                if(el.hasAttribute("@click")){
-                    let expression=el.getAttribute('@click');//count++
-                    el.addEventListener('click',()=>{
-                        eval(`with(data) ${expression}`);
+                Array.from(el.attributes).forEach((attribute)=>{
+                    if(!attribute.name.startsWith("@")) return;
+
+                    let event=attribute.name.replace("@",'');
+
+                    el.addEventListener(event,()=>{
+                        eval(`with(data) ${attribute.value}`);
                     });
-                }
+                   
+                })
             });
         }
         let root=document.querySelector("[x-data]");
