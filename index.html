@@ -13,66 +13,6 @@
       <button @mouseenter="count++">+</button>
       <button @click="count--">-</button>
     </div>
-    <script>
-      function getRawData() {
-        let dataStringObj = root.getAttribute("x-data");
-        return eval(`(${dataStringObj})`);
-      }
-      function refreshDom() {
-        iterateDomNodes(root, (el) => {
-          //each root's element will iterate here
-          Array.from(el.attributes).forEach((attribute) => {
-            if (!Object.keys(directives).includes(attribute.name)) return;
-            directives[attribute.name](
-              el,
-              eval(`with (rawData) ${attribute.value}`)
-            );
-          });
-        });
-      }
-      function iterateDomNodes(el, callback) {
-        callback(el);
-        el = el.firstElementChild;
-        while (el) {
-          iterateDomNodes(el, callback);
-          el = el.nextElementSibling; //last dom tree sibling will be null,so the loop will stop
-        }
-      }
-      function getReactiveData(rawData) {
-        return new Proxy(rawData, {
-          set(rawData, key, value) {
-            rawData[key] = value;
-            refreshDom();
-          },
-        }); //when data change it call proxy set fucntion and update rawData
-      }
-      function listenEvents() {
-        iterateDomNodes(root, (el) => {
-          Array.from(el.attributes).forEach((attribute) => {
-            if (!attribute.name.startsWith("@")) return;
-
-            let event = attribute.name.replace("@", "");
-
-            el.addEventListener(event, () => {
-              eval(`with(data) ${attribute.value}`);
-            });
-          });
-        });
-      }
-      let root = document.querySelector("[x-data]");
-      let rawData = getRawData();
-      let data = getReactiveData(rawData);
-      //define directives here
-      let directives = {
-        "x-text": function (el, value) {
-          el.innerHTML = value; //get rawData scope and call like a variable
-        },
-        "x-show": function (el, value) {
-          el.style.display = value ? "block" : "none";
-        },
-      };
-      refreshDom(); //initial refresh
-      listenEvents();
-    </script>
+    <script src="alpineClone.js"></script>
   </body>
 </html>
