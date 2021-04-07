@@ -42,10 +42,21 @@
                 }
             }); //when data change it call proxy set fucntion and update rawData
         }
+        function listenEvents() {
+            iterateDomNodes(root,el=>{
+                if(el.hasAttribute("@click")){
+                    let expression=el.getAttribute('@click');//count++
+                    el.addEventListener('click',()=>{
+                        eval(`with(data) ${expression}`);
+                    });
+                }
+            });
+        }
         let root=document.querySelector("[x-data]");
         let rawData=getRawData();
         let data=getReactiveData(rawData);
         refreshDom();//initial refresh
+        listenEvents();
     </script>
 </body>
 </html>
