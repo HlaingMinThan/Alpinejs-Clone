@@ -37,8 +37,14 @@
 
         let root=document.querySelector("[x-data]");
         let rawData=getRawData();
-        refreshDom();
-
+        //reactive data
+        let data=new Proxy(rawData,{
+                set(rawData,key,value){
+                    rawData[key]=value;
+                    refreshDom();
+                }
+        }); //when data change it call proxy set fucntion and update rawData
+        refreshDom();//initial refresh
     </script>
 </body>
 </html>
