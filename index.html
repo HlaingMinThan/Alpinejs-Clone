@@ -1,66 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-</head>
-<body>
-    
+  </head>
+  <body>
     <div x-data="{count:1}">
-        <h1 x-text="count"></h1>
-        <button @mouseenter="count++">+</button>
-        <button @click="count--">-</button>
-    </div>    
+      <h1 x-text="count"></h1>
+      <button @mouseenter="count++">+</button>
+      <button @click="count--">-</button>
+    </div>
     <script>
-        function getRawData() {
-            let dataStringObj=root.getAttribute("x-data");
-            return eval(`(${dataStringObj})`);
+      function getRawData() {
+        let dataStringObj = root.getAttribute("x-data");
+        return eval(`(${dataStringObj})`);
+      }
+      function refreshDom() {
+        iterateDomNodes(root, (el) => {
+          //each root's element will iterate here
+          if (el.hasAttribute("x-text")) {
+            let expression = el.getAttribute("x-text"); //'count'
+            el.innerHTML = eval(`with (rawData) ${expression}`); //get rawData scope and call like a variable
+          }
+        });
+      }
+      function iterateDomNodes(el, callback) {
+        callback(el);
+        el = el.firstElementChild;
+        while (el) {
+          iterateDomNodes(el, callback);
+          el = el.nextElementSibling; //last dom tree sibling will be null,so the loop will stop
         }
-        function refreshDom() {
-           iterateDomNodes(root,el=>{//each root's element will iterate here
-               if(el.hasAttribute('x-text')){
-                    let expression=el.getAttribute('x-text');//'count'
-                    el.innerHTML=eval(`with (rawData) ${expression}`);//get rawData scope and call like a variable
-               }
-           })
-        }
-        function iterateDomNodes(el,callback) {
-            callback(el);
-            el=el.firstElementChild;
-            while(el){
-                iterateDomNodes(el,callback);
-                el=el.nextElementSibling;//last dom tree sibling will be null,so the loop will stop
-            }
-        }
-        function getReactiveData(rawData) {
-            return new Proxy(rawData,{
-                set(rawData,key,value){
-                    rawData[key]=value;
-                    refreshDom();
-                }
-            }); //when data change it call proxy set fucntion and update rawData
-        }
-        function listenEvents() {
-            iterateDomNodes(root,el=>{
-                Array.from(el.attributes).forEach((attribute)=>{
-                    if(!attribute.name.startsWith("@")) return;
+      }
+      function getReactiveData(rawData) {
+        return new Proxy(rawData, {
+          set(rawData, key, value) {
+            rawData[key] = value;
+            refreshDom();
+          },
+        }); //when data change it call proxy set fucntion and update rawData
+      }
+      function listenEvents() {
+        iterateDomNodes(root, (el) => {
+          Array.from(el.attributes).forEach((attribute) => {
+            if (!attribute.name.startsWith("@")) return;
 
-                    let event=attribute.name.replace("@",'');
+            let event = attribute.name.replace("@", "");
 
-                    el.addEventListener(event,()=>{
-                        eval(`with(data) ${attribute.value}`);
-                    });
-                   
-                })
+            el.addEventListener(event, () => {
+              eval(`with(data) ${attribute.value}`);
             });
-        }
-        let root=document.querySelector("[x-data]");
-        let rawData=getRawData();
-        let data=getReactiveData(rawData);
-        refreshDom();//initial refresh
-        listenEvents();
+          });
+        });
+      }
+      let root = document.querySelector("[x-data]");
+      let rawData = getRawData();
+      let data = getReactiveData(rawData);
+      refreshDom(); //initial refresh
+      listenEvents();
     </script>
-</body>
+  </body>
 </html>
