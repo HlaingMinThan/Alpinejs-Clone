@@ -19,15 +19,18 @@
             return eval(`(${dataStringObj})`);
         }
         function refreshDom() {
-           walkDom(root,el=>{
-               console.log(el.outerHTML);
+           refreshingDom(root,el=>{//each root's element will iterate here
+               if(el.hasAttribute('x-text')){
+                    let expression=el.getAttribute('x-text');//'count'
+                    el.innerHTML=eval(`with (rawData) ${expression}`);//get rawData scope and call like a variable
+               }
            })
         }
-        function walkDom(el,callback) {
+        function refreshingDom(el,callback) {
             callback(el);
             el=el.firstElementChild;
             while(el){
-                walkDom(el,callback);
+                refreshingDom(el,callback);
                 el=el.nextElementSibling;//last dom tree sibling will be null,so the loop will stop
             }
         }
@@ -36,7 +39,6 @@
         let rawData=getRawData();
         refreshDom();
 
-        console.log(rawData);
     </script>
 </body>
 </html>
