@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+    <div x-data="{count:1}">
+        <h1 x-text="count"></h1>
+        <button @click="count++">+</button>
+        <button @click="count--">-</button>
+    </div>    
+    <script>
+        function getRawData() {
+            let dataStringObj=root.getAttribute("x-data");
+            return eval(`(${dataStringObj})`);
+        }
+
+        let root=document.querySelector("[x-data]");
+        let rawData=getRawData();
+
+        console.log(rawData);
+    </script>
+</body>
+</html>
