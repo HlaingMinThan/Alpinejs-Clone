@@ -18,9 +18,23 @@
             let dataStringObj=root.getAttribute("x-data");
             return eval(`(${dataStringObj})`);
         }
+        function refreshDom() {
+           walkDom(root,el=>{
+               console.log(el.outerHTML);
+           })
+        }
+        function walkDom(el,callback) {
+            callback(el);
+            el=el.firstElementChild;
+            while(el){
+                walkDom(el,callback);
+                el=el.nextElementSibling;//last dom tree sibling will be null,so the loop will stop
+            }
+        }
 
         let root=document.querySelector("[x-data]");
         let rawData=getRawData();
+        refreshDom();
 
         console.log(rawData);
     </script>
